@@ -1,0 +1,28 @@
+{
+  "name": "real",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env NODE_ENV=development nodemon --exec babel-node ./src/sever.js",
+    "build": "babel ./src --out-dir ./dist",
+    "clean": "rimraf ./dist",
+    "prod": "npm run clean && npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/preset-env": "^7.11.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/node": "^7.10.5",
+    "config": "^3.3.1",
+    "cross-env": "^7.0.2",
+    "rimraf": "^3.0.2"
+  }
+}
