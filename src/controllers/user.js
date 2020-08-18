@@ -15,7 +15,7 @@ export const signUp = async (req, res) => {
     const user = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      phoneNumber: req.body.phoneNumber,
+      phoneNumber: Number(req.body.phoneNumber),
       email: req.body.email,
       password: hash,
       userName: req.body.userName,

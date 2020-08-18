@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { json } from "body-parser";
+import userRouter from "../routes/user";
 
 class AppCore {
   constructor(port) {
@@ -15,6 +16,7 @@ class AppCore {
     this.app.get("/", (req, res) => {
       res.send("Welcome People!");
     });
+    this.app.use("/api/auth", userRouter);
   }
 }
 

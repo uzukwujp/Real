@@ -6,7 +6,7 @@ const schema = Joi.object({
   email: Joi.string()
     .email({
       minDomainSegments: 2,
-      tlds: { allow: ["com", "net", "dev", "com.ng"] },
+      tlds: { allow: false },
     })
     .required(),
   phoneNumber: Joi.number().required(),
@@ -18,4 +18,4 @@ const schema = Joi.object({
 const validateSignUpInput = (user) => {
   return schema.validate(user);
 };
-export default validateUserInput;
+export default validateSignUpInput;
