@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import { json } from "body-parser";
 
 class AppCore {
   constructor(port) {
@@ -8,6 +10,8 @@ class AppCore {
   }
 
   setMiddleWares() {
+    this.app.use(cors());
+    this.app.use(json());
     this.app.get("/", (req, res) => {
       res.send("Welcome People!");
     });
