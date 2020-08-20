@@ -40,13 +40,17 @@ export const signIn = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "invalid email or password" });
     }
+
     const valid = await bcrypt.compare(req.body.password, user.password);
+
     if (!valid) {
       return res.status(400).json({ message: "invalid email or password" });
     }
+
     const token = generateToken(user);
+
     res.status(200).json({ token, user });
-  } catch (error) {
-    res.status(500).json({ message: error });
+  } catch (e) {
+    res.status(500).json({ message: e });
   }
 };

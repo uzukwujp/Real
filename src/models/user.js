@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Project from "./project";
+import uniqueValidator from "mongoose-unique-validator";
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -11,5 +11,7 @@ const userSchema = new mongoose.Schema({
   projects: [{ type: mongoose.Types.ObjectId, ref: "Project" }],
   isAdmin: { type: Boolean, default: false },
 });
+
+userSchema.plugin(uniqueValidator);
 
 export default mongoose.model("User", userSchema);

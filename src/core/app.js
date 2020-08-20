@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import { json } from "body-parser";
 import userRouter from "../routes/user";
+import milestoneRouter from "../routes/milestone";
+import projectRouter from "../routes/project";
+import stageRouter from "../routes/stage";
 
 class AppCore {
   constructor(port) {
@@ -17,6 +20,9 @@ class AppCore {
       res.send("Welcome People!");
     });
     this.app.use("/api/auth", userRouter);
+    this.app.use("/api/milestones", milestoneRouter);
+    this.app.use("/api/projects", projectRouter);
+    this.app.use("/api/stages", stageRouter);
   }
 }
 
