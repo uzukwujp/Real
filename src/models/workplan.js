@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
-import Stage from "./stage";
 
 const workPlanSchema = new mongoose.Schema({
-  projectName: { type: String, required: true },
-  stages: [{ type: mongoose.Types.ObjectId, ref: "Stage", required: true }],
-  progress: { type: Number },
+  projectId: { type: mongoose.Types.ObjectId, required: true, ref: "Project" },
+  progress: { type: Number, default: 0, min: 0, max: 100 },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
 });

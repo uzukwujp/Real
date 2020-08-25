@@ -1,8 +1,9 @@
 import Joi from "joi";
 
 const schema = Joi.object({
-  projectId: Joi.string().required(),
+  workPlanId: Joi.string().required(),
   stageName: Joi.string().required(),
+  projectId: Joi.string().required(),
 });
 
 const validateStageInput = (stage) => {

@@ -1,5 +1,6 @@
 import Milestone from "../models/milestone";
 import validateMilestoneInput from "../inputValidations/milestone";
+import Stage from "../models/stage";
 import Project from "../models/project";
 
 export const createMilestone = async (req, res) => {
@@ -8,19 +9,15 @@ export const createMilestone = async (req, res) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-    const project = await Project.findOne({ _id: req.body.projectId });
-    if (!project) {
-      return res.status(400).json({ message: "no such project exist" });
-    }
     const milestone = new Milestone({
-      projectName: project.name,
-      stageName: req.body.projectStage,
+      stageId: await Stage.findOne({ _id: req.body.stageId }),
       mileStones: req.body.mileStones,
+      projectId: await Project.findOne({ _id: req.body.projectId }),
     });
     const result = await milestone.save();
     res.status(201).json({ message: "milestone created successfully", result });
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -31,24 +28,36 @@ export const updateOneMilestone = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const project = await Project.findOne({ _id: req.body.projectId });
-    if (!project) {
-      return res.status(400).json({ message: "invalid project id" });
+    let milestone = await Milestone.findOne({ _id: req.params.id });
+    if (!milestone) {
+      return res.status(400).json({ message: "invalid id provided" });
     }
-    let milestone = {};
-    milestone.projectname = project.name;
-    milestone.stageName = req.body.projectStage;
+
+    milestone.projectId = req.body.projectId;
+    milestone.stageId = req.body.stageId;
     milestone.mileStones = req.body.mileStones;
-    const result = await Milestone.findOneAndUpdate(
-      { projectName: project.name, stageName: req.body.projectStage },
-      milestone,
-      {
-        new: true,
-        upsert: true,
-      }
-    );
-    res.status(200).json({ message: result });
+    milestone.markModified("mileStones");
+
+    const result = await milestone.save();
+
+    res.status(200).json({ message: "milestone updated successfully", result });
   } catch (error) {
-    res.status(500).json({ message: error });
+    console.log(error.stack);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getOneMilestone = async (req, res) => {
+  try {
+    const milestone = await Milestone.findOne({ _id: req.params.id });
+
+    if (!milestone) {
+      return res
+        .status(400)
+        .json({ message: "invalid projectId or stageName" });
+    }
+    res.status(200).json({ message: milestone });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
   }
 };

@@ -1,14 +1,13 @@
 import mongoose from "mongoose";
-import Milestone from "./milestone";
 
 const stageSchema = new mongoose.Schema({
-  projectName: { type: String, required: true },
-  stageName: { type: String, required: true },
-  milestone: {
+  workPlanId: {
     type: mongoose.Types.ObjectId,
-    ref: "Milestone",
     required: true,
+    ref: "Workplan",
   },
+  stageName: { type: String, required: true },
+  projectId: { type: mongoose.Types.ObjectId, ref: "Project", required: true },
 });
 
 export default mongoose.model("Stage", stageSchema);

@@ -1,7 +1,7 @@
 import Joi from "joi";
 const schema = Joi.object({
   projectId: Joi.string().required(),
-  projectStage: Joi.string().required(),
+  stageId: Joi.string().required(),
   mileStones: Joi.object().required(),
 });
 

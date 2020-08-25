@@ -3,6 +3,8 @@ import validateSignUpInput from "../inputValidations/signUp";
 import bcrypt from "bcrypt";
 import validateSignInInput from "../inputValidations/signIn";
 import generateToken from "../utilities/generateToken";
+import sharp from "sharp";
+import { join } from "path";
 
 export const signUp = async (req, res) => {
   try {
@@ -10,7 +12,20 @@ export const signUp = async (req, res) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
+
+    let fileName;
+
+    if (req.file) {
+      fileName = `thum_${req.file.filename}`;
+
+      const resize_image = await sharp(req.file.path)
+        .resize(200, 200)
+        .png()
+        .toFile(join(__dirname, `../avatars/${fileName}`));
+    }
+
     const hash = await bcrypt.hash(req.body.password, 10);
+    console.log(req.body);
 
     const user = new User({
       firstName: req.body.firstName,
@@ -19,14 +34,19 @@ export const signUp = async (req, res) => {
       email: req.body.email,
       password: hash,
       userName: req.body.userName,
-      isAdmin: req.body.isAdmin,
+      isAdmin: Boolean(req.body.isAdmin),
+      avatar: fileName,
     });
+    console.log(user);
+
+    user.completeName();
+
     const result = await user.save();
     if (result) {
-      res.status(201).json({ message: "registration successful" });
+      res.status(201).json({ message: "registration successful", result });
     }
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -51,6 +71,26 @@ export const signIn = async (req, res) => {
 
     res.status(200).json({ token, user });
   } catch (e) {
-    res.status(500).json({ message: e });
+    res.status(500).json({ message: e.message });
+  }
+};
+
+export const uploadAvatar = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user.id });
+    if (!user) {
+      res.status(400).json({ message: "no user account found" });
+    }
+    const fileName = `thum_${req.file.filename}`;
+    const resize_image = await sharp(req.file.path)
+      .resize(200, 200)
+      .png()
+      .toFile(join(__dirname, `../avatars/${fileName}`));
+    const url = `http://localhost:4000/${fileName}`;
+    user.avatar = url;
+    const result = await user.save();
+    res.status(200).json({ message: "photo uploaded successfully", result });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
   }
 };
