@@ -7,6 +7,8 @@ import projectRouter from "../routes/project";
 import stageRouter from "../routes/stage";
 import workPlanRouter from "../routes/workplan";
 import { join } from "path";
+import updateRouter from "../routes/update";
+import updateScheduleRouter from "../routes/updateSchedule";
 
 class AppCore {
   constructor(port) {
@@ -26,6 +28,8 @@ class AppCore {
     this.app.use("/api/projects", projectRouter);
     this.app.use("/api/stages", stageRouter);
     this.app.use("/api/workplans", workPlanRouter);
+    this.app.use("/api/updates", updateRouter);
+    this.app.use("/api/updateschedules", updateScheduleRouter);
     this.app.use(express.static(join(__dirname, `../avatars`)));
   }
 }

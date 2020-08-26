@@ -13,6 +13,7 @@ export const createWorkPlan = async (req, res) => {
       projectId: await Project.findOne({ _id: req.body.projectId }),
       startDate: new Date(req.body.startDate),
       endDate: new Date(req.body.endDate),
+      progress: req.body.progress,
     });
 
     const result = await workPlan.save();
