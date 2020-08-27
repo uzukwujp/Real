@@ -7,6 +7,7 @@ import {
   getAllClientsProjects,
   getAllProjects,
   getOneProjectDetails,
+  downloadPlan,
 } from "../controllers/project";
 import { uploadProjectPhotos, uploadPlan } from "../middlewares/multer";
 import auth from "../middlewares/auth";
@@ -23,10 +24,13 @@ projectRouter.route("/allclientsprojects").get(auth, getAllClientsProjects);
 projectRouter
   .route("/uploadphotos/:projectid")
   .put(auth, admin, uploadProjectPhotos, uploadPhotos);
+
 projectRouter
   .route("/:projectId")
-  .put(auth, updateOneProject)
+  .put(auth, uploadPlan, updateOneProject)
   .delete(auth, admin, deleteOneProject)
   .get(auth, getOneProjectDetails);
+
+projectRouter.route("/downloadplan/:fileName").get(auth, admin, downloadPlan);
 
 export default projectRouter;

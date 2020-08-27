@@ -20,9 +20,6 @@ class AppCore {
   setMiddleWares() {
     this.app.use(cors());
     this.app.use(json());
-    this.app.get("/", (req, res) => {
-      res.send("Welcome People!");
-    });
     this.app.use("/api/users", userRouter);
     this.app.use("/api/milestones", milestoneRouter);
     this.app.use("/api/projects", projectRouter);

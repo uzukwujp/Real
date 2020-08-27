@@ -86,8 +86,8 @@ export const uploadAvatar = async (req, res) => {
       .resize(200, 200)
       .png()
       .toFile(join(__dirname, `../avatars/${fileName}`));
-    const url = `http://localhost:4000/${fileName}`;
-    user.avatar = url;
+
+    user.avatar = fileName;
     const result = await user.save();
     res.status(200).json({ message: "photo uploaded successfully", result });
   } catch (e) {

@@ -15,7 +15,7 @@ const mileStoneSchema = new mongoose.Schema(
   { strict: false }
 );
 
-mileStoneSchema.post("save", async function () {
+mileStoneSchema.pre("save", async function () {
   const projectId = this.projectId;
 
   const numberOfLineItems = Object.keys(this.mileStones).length;
@@ -27,15 +27,14 @@ mileStoneSchema.post("save", async function () {
     }
   }
 
-  console.log(numberOfLineItems, lineItemsCompleted);
   if (lineItemsCompleted === numberOfLineItems) {
     const count = await Stage.find({ projectId: projectId }).count();
-    console.log(count);
     const increment = 100 / count;
 
     const workplan = await Workplan.findOne({ projectId: projectId });
-    console.log(workplan);
-    workplan.progress += increment;
+    const progress = workplan.progress + increment;
+    workplan.progress = progress;
+    await workplan.save();
   }
 });
 

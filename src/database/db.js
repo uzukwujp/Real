@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+
+mongoose.set("useFindAndModify", false);
 class DbConnection {
   static async connect() {
     try {

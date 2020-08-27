@@ -4,9 +4,8 @@ import Workplan from "../models/workplan";
 import Milestone from "../models/milestone";
 import Stage from "../models/stage";
 import { join } from "path";
-import promisifiedUnlink from "../utilities/unlink";
+import { promisifiedUnlink, promisifiedReadFile } from "../utilities/unlink";
 import User from "../models/user";
-import mongoose from "mongoose";
 
 export const createProject = async (req, res) => {
   try {
@@ -30,6 +29,11 @@ export const createProject = async (req, res) => {
 
 export const uploadPhotos = async (req, res) => {
   try {
+    if (!req.files) {
+      return res
+        .status(400)
+        .json({ message: "please provide photos to be uploaded" });
+    }
     const fileNames = req.files.map((x) => {
       return x.filename;
     });
@@ -48,9 +52,20 @@ export const uploadPhotos = async (req, res) => {
 
 export const getAllProjects = async (req, res) => {
   try {
+    let match = {};
+
+    if (req.query.location) {
+      match.location = req.query.location;
+    }
+
     const projects = await Workplan.find({}).populate({
       path: "projectId",
       populate: { path: "user" },
+      match,
+      options: {
+        limit: Number(req.query.limit),
+        skip: Number(req.query.skip),
+      },
     });
 
     if (!projects) {
@@ -67,7 +82,8 @@ export const getAllProjects = async (req, res) => {
 export const getAllClientsProjects = async (req, res) => {
   try {
     const projects = await Project.find({ _id: req.user.id });
-    if (!projects) {
+
+    if (projects.length === 0) {
       return res
         .status(400)
         .json({ message: "you do not cuurently have a project" });
@@ -111,22 +127,19 @@ export const getOneProjectDetails = async (req, res) => {
 export const updateOneProject = async (req, res) => {
   try {
     const { error } = validateProjectInput(req.body);
+    console.log(error);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    let project = await Project({ _id: req.params.id });
+    let project = await Project.findOne({ _id: req.params.projectId });
     if (!project) {
       return res.status(400).json({ message: "no such project found" });
     }
-    if (!req.file) {
-      project.name = req.body.projectName;
-      project.location = req.body.location;
-    } else {
-      project.name = req.body.projectName;
-      project.location = req.body.location;
-      project.projectPlan = req.file.filename;
-    }
+
+    project.name = req.body.projectName;
+    project.location = req.body.location;
+    project.projectPlan = req.file.filename;
     const result = await project.save();
     res.status(200).json({ message: result });
   } catch (e) {
@@ -136,7 +149,7 @@ export const updateOneProject = async (req, res) => {
 
 export const deleteOneProject = async (req, res) => {
   try {
-    const project = await Project.findOne({ _id: req.params.id });
+    const project = await Project.findOne({ _id: req.params.projectId });
     if (project.photos.length > 0) {
       for (let fileName of project.photos) {
         await promisifiedUnlink(join(__dirname, `../images/${fileName}`));
@@ -159,4 +172,22 @@ export const deleteOneProject = async (req, res) => {
   }
 };
 
-// two handlers left update one project and delete one project
+// Download project plans
+
+export const downloadPlan = async (req, res) => {
+  try {
+    const plan = await promisifiedReadFile(
+      join(__dirname, `../projectPlans/${req.params.fileName}`)
+    );
+    if (!plan) {
+      return res.status(400).json({ message: "invalid filename" });
+    }
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename= ${req.params.fileName}`
+    );
+    res.status(200).send(plan);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
