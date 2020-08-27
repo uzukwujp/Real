@@ -8,11 +8,4 @@ const updateScheduleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-updateScheduleSchema.post("findOneAndUpdate", async function () {
-  console.log(this.getQuery());
-  const updateSchedule = await this.model.findOne(this.getQuery());
-  console.log(updateSchedule);
-  updateSchedule.lastUpdate = updateSchedule.nextUpdate;
-});
-
 export default mongoose.model("UpdateSchedule", updateScheduleSchema);
