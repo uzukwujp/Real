@@ -1,1 +1,6 @@
-{ "jwt_secret": "app_secret" }
+{
+  "jwt_secret": "app_secret",
+  "service": "app_service",
+  "email": "app_email",
+  "password": "app_password"
+}

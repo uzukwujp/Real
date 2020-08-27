@@ -28,6 +28,7 @@ class AppCore {
     this.app.use("/api/updates", updateRouter);
     this.app.use("/api/updateschedules", updateScheduleRouter);
     this.app.use(express.static(join(__dirname, `../avatars`)));
+    this.app.use(express.static(join(__dirname, `../images`)));
   }
 }
 
